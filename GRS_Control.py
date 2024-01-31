@@ -35,7 +35,7 @@ class GRS(): # Removed class members and implemented them in initialization
     # kk = 2 #5 #10
     
     #The number of iteration (when while loop is not used)
-    iteration = 35
+    iteration = 200
     
     
     def __init__(self, true_dyn, proxy_dyn, n, m, T, x0, G0, dt, eps, kk): # Parameters (dt, eps, kk) located here
@@ -266,7 +266,7 @@ class GRS(): # Removed class members and implemented them in initialization
         return self.soln_k.y
     
     def get_x(self):
-        return self.x
+        return self.x[0], self.x[1]
     
     # -------------
 
@@ -347,32 +347,41 @@ if __name__ == "__main__":
     x2_0 = 0
     x0 = [x1_0, x2_0]
 
-    T = 0.01#0.00001
+    T = 0.25#0.00001
     n = 2
     m = 2
-    grs = GRS(true_dyn, proxy_dyn, n, m, T, x0, G0, 0.0001, 0.01, 2)
+    grs = GRS(true_dyn, proxy_dyn, n, m, T, x0, G0, dt=0.0005, eps=0.01, kk=5)
+
+    # grs.RS_plot()
+    # grs.GRS_plot()
+    # grs.ref_plot()
+    # grs.dyn_update()
+    # grs.path_plot()
+    # plt.show()
 
     # Get Data
     first_soln_true = grs.get_RS()
     first_GRS = grs.get_GRS()
     first_y = grs.get_y()
     first_soln_ky = grs.get_soln_ky()
-    first_x = grs.get_x()
+    grs.dyn_update()
+    first_x0, first_x1 = grs.get_x()
 
     # Plot Data
     plt.scatter(first_soln_true[0], first_soln_true[1], s=1)
     plt.scatter(first_GRS[0], first_GRS[1], color='grey', s=1)
     plt.scatter(first_y[0], first_y[1], color='r', s=5)
     plt.plot(first_soln_ky[0], first_soln_ky[1], color='r', label='Reference Trajectory')
-    plt.plot(first_x[0], first_x[1], color='b', label='Controlled Trajectory')
+    plt.plot(first_x0, first_x1, color='b', label='Controlled Trajectory')
 
     # Create second GRS object
-
-    grs2 = GRS(true_dyn, proxy_dyn, n, m, T, x0, G0, 0.0001, 0.001, 10) # Using kk = 5
+    T = 0.25
+    grs2 = GRS(true_dyn, proxy_dyn, n, m, T, x0, G0, dt=0.0008, eps=0.08, kk=10)
     second_soln_true = grs2.get_RS()
     second_GRS = grs2.get_GRS()
     second_y = grs2.get_y()
     second_soln_ky = grs2.get_soln_ky()
+    grs2.dyn_update()
     second_x = grs2.get_x()
 
     # Plot Data
